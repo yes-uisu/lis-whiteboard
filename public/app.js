@@ -216,10 +216,6 @@ socket.on('user-joined', () => {
     document.getElementById('user-count').textContent = `👥 ${userCount}`;
 });
 
-socket.on('clear-canvas', () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
-
 // 接收Markdown更新
 socket.on('markdown-data', (content) => {
     isUpdatingMarkdown = true;
@@ -231,13 +227,6 @@ socket.on('markdown-data', (content) => {
 socket.on('markdown-update', (content) => {
     isUpdatingMarkdown = true;
     markdownEditor.value = content;
-    updatePreview();
-    isUpdatingMarkdown = false;
-});
-
-socket.on('clear-markdown', () => {
-    isUpdatingMarkdown = true;
-    markdownEditor.value = '';
     updatePreview();
     isUpdatingMarkdown = false;
 });

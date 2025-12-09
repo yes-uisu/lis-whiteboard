@@ -101,14 +101,6 @@ io.on('connection', (socket) => {
     socket.to(roomId).emit('draw', drawData);
   });
   
-  // 清空画布
-  socket.on('clear-canvas', (roomId) => {
-    if (rooms.has(roomId)) {
-      rooms.set(roomId, []);
-    }
-    io.to(roomId).emit('clear-canvas');
-  });
-  
   // Markdown更新
   socket.on('markdown-update', (data) => {
     const { roomId, content } = data;
@@ -120,14 +112,6 @@ io.on('connection', (socket) => {
     
     // 广播给房间内其他用户
     socket.to(roomId).emit('markdown-update', content);
-  });
-  
-  // 清空Markdown
-  socket.on('clear-markdown', (roomId) => {
-    if (markdownData.has(roomId)) {
-      markdownData.set(roomId, '');
-    }
-    io.to(roomId).emit('clear-markdown');
   });
   
   // 断开连接
