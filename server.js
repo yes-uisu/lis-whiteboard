@@ -42,7 +42,10 @@ app.get('/api/qrcode/:roomId', async (req, res) => {
   // 如果在Docker环境或云服务器，使用公网地址
   let url;
   if (process.env.PUBLIC_IP) {
-    url = `http://${publicIP}:${publicPort}/?room=${roomId}`;
+    // 如果端口是443，使用https，否则使用http
+    const protocol = publicPort === '443' ? 'https' : 'http';
+    const portSuffix = (publicPort === '443' || publicPort === '80') ? '' : `:${publicPort}`;
+    url = `${protocol}://${publicIP}${portSuffix}/?room=${roomId}`;
   } else {
     // 本地开发环境使用本地IP
     const localIP = getLocalIP();
