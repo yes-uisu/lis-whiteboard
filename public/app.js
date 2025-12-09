@@ -297,6 +297,61 @@ mdButtons.forEach(btn => {
     });
 });
 
+// ==================== 全屏切换功能 ====================
+const editorPane = document.getElementById('editor-pane');
+const previewPane = document.getElementById('preview-pane');
+const editorFullscreenBtn = document.getElementById('editor-fullscreen-btn');
+const previewFullscreenBtn = document.getElementById('preview-fullscreen-btn');
+const splitViewBtn = document.getElementById('split-view-btn');
+
+let currentView = 'split'; // 'split', 'editor-fullscreen', 'preview-fullscreen'
+
+// 编辑区全屏
+if (editorFullscreenBtn) {
+    editorFullscreenBtn.addEventListener('click', () => {
+        currentView = 'editor-fullscreen';
+        editorPane.classList.add('fullscreen');
+        editorPane.classList.remove('hidden');
+        previewPane.classList.add('hidden');
+        previewPane.classList.remove('fullscreen');
+        
+        // 切换按钮显示
+        editorFullscreenBtn.style.display = 'none';
+        previewFullscreenBtn.style.display = 'none';
+        splitViewBtn.style.display = 'inline-block';
+    });
+}
+
+// 预览区全屏
+if (previewFullscreenBtn) {
+    previewFullscreenBtn.addEventListener('click', () => {
+        currentView = 'preview-fullscreen';
+        previewPane.classList.add('fullscreen');
+        previewPane.classList.remove('hidden');
+        editorPane.classList.add('hidden');
+        editorPane.classList.remove('fullscreen');
+        
+        // 切换按钮显示
+        editorFullscreenBtn.style.display = 'none';
+        previewFullscreenBtn.style.display = 'none';
+        splitViewBtn.style.display = 'inline-block';
+    });
+}
+
+// 恢复分屏
+if (splitViewBtn) {
+    splitViewBtn.addEventListener('click', () => {
+        currentView = 'split';
+        editorPane.classList.remove('fullscreen', 'hidden');
+        previewPane.classList.remove('fullscreen', 'hidden');
+        
+        // 切换按钮显示
+        editorFullscreenBtn.style.display = 'inline-block';
+        previewFullscreenBtn.style.display = 'inline-block';
+        splitViewBtn.style.display = 'none';
+    });
+}
+
 function insertMarkdown(action) {
     const start = markdownEditor.selectionStart;
     const end = markdownEditor.selectionEnd;

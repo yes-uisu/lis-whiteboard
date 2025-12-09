@@ -255,10 +255,28 @@ label {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 全屏样式 */
+.editor-pane.fullscreen,
+.preview-pane.fullscreen {
+    flex: 1 1 100%;
+}
+
+.editor-pane.hidden,
+.preview-pane.hidden {
+    flex: 0 0 0;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .editor-pane {
     border-right: 2px solid #e9ecef;
+}
+
+.editor-pane.fullscreen {
+    border-right: none;
 }
 
 .editor-pane h3,

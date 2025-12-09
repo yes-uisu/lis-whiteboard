@@ -67,6 +67,12 @@
                 <button id="save-markdown-btn" class="action-btn">💾 保存文档</button>
                 <input type="file" id="markdown-file-input" accept=".md,.markdown,.txt" style="display: none;">
             </div>
+            
+            <div class="tool-group">
+                <button id="editor-fullscreen-btn" class="action-btn" title="编辑区全屏">📝 全屏编辑</button>
+                <button id="preview-fullscreen-btn" class="action-btn" title="预览区全屏">👁️ 全屏预览</button>
+                <button id="split-view-btn" class="action-btn" style="display: none;" title="恢复分屏">⬌ 分屏</button>
+            </div>
         </div>
         
         <!-- 通用工具栏 -->
@@ -79,12 +85,12 @@
         
         <!-- Markdown编辑区域 -->
         <div id="markdown-container" style="display: none;">
-            <div class="markdown-editor">
-                <div class="editor-pane">
+            <div class="markdown-editor" id="markdown-editor-container">
+                <div class="editor-pane" id="editor-pane">
                     <h3>📝 编辑区</h3>
                     <textarea id="markdown-editor" placeholder="在此输入 Markdown 内容...&#x0a;&#x0a;# 标题&#x0a;## 二级标题&#x0a;&#x0a;**粗体** *斜体*&#x0a;&#x0a;- 列表项 1&#x0a;- 列表项 2&#x0a;&#x0a;```javascript&#x0a;console.log('代码块');&#x0a;```"></textarea>
                 </div>
-                <div class="preview-pane">
+                <div class="preview-pane" id="preview-pane">
                     <h3>👁️ 预览</h3>
                     <div id="markdown-preview" class="markdown-body"></div>
                 </div>
