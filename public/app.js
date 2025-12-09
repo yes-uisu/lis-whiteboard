@@ -346,41 +346,82 @@ function insertMarkdown(action) {
     socket.emit('markdown-update', { roomId, content: markdownEditor.value });
 }
 
-// 清空文档
-document.getElementById('clear-markdown-btn').addEventListener('click', () => {
-    if (confirm('确定要清空文档吗？')) {
-        markdownEditor.value = '';
-        updatePreview();
-        socket.emit('clear-markdown', roomId);
-    }
-});
+// ==================== 文档保存和加载 ====================
+// 加载文档功能
+const loadMarkdownBtn = document.getElementById('load-markdown-btn');
+const markdownFileInput = document.getElementById('markdown-file-input');
 
-// 保存文档
-document.getElementById('save-markdown-btn').addEventListener('click', () => {
-    const content = markdownEditor.value;
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const link = document.createElement('a');
-    link.download = `document_${roomId}_${Date.now()}.md`;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-});
+if (loadMarkdownBtn && markdownFileInput) {
+    loadMarkdownBtn.addEventListener('click', () => {
+        markdownFileInput.click();
+    });
+    
+    markdownFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // 检查文件类型
+        if (!file.name.match(/\.(md|markdown|txt)$/i)) {
+            alert('请选择 Markdown 文件（.md, .markdown, .txt）');
+            return;
+        }
+        
+        // 检查文件大小（限制10MB）
+        if (file.size > 10 * 1024 * 1024) {
+            alert('文件太大，请选择小于 10MB 的文件');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target.result;
+            markdownEditor.value = content;
+            updatePreview();
+            // 同步到其他用户
+            socket.emit('markdown-update', { roomId, content });
+            alert('文档加载成功！');
+        };
+        reader.onerror = () => {
+            alert('文件读取失败，请重试');
+        };
+        reader.readAsText(file, 'UTF-8');
+        
+        // 清空input，允许重复加载同一文件
+        e.target.value = '';
+    });
+}
 
-// ==================== 画布功能 ====================
-// 清空画布
-document.getElementById('clear-canvas-btn').addEventListener('click', () => {
-    if (confirm('确定要清空画布吗？')) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        socket.emit('clear-canvas', roomId);
-    }
-});
+// 保存文档为 Markdown 文件
+const saveMarkdownBtn = document.getElementById('save-markdown-btn');
+if (saveMarkdownBtn) {
+    saveMarkdownBtn.addEventListener('click', () => {
+        const content = markdownEditor.value;
+        if (!content.trim()) {
+            alert('文档内容为空，无需保存');
+            return;
+        }
+        const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        link.download = `Li-Whiteboard-Doc-${timestamp}.md`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+}
 
-// 保存画布
-document.getElementById('save-canvas-btn').addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.download = `whiteboard_${roomId}_${Date.now()}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-});
+// ==================== 画布保存 ====================
+// 保存画布为 PNG 图片
+const saveCanvasBtn = document.getElementById('save-canvas-btn');
+if (saveCanvasBtn) {
+    saveCanvasBtn.addEventListener('click', () => {
+        const link = document.createElement('a');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        link.download = `Li-Whiteboard-Canvas-${timestamp}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
 
 // 显示二维码
 const qrModal = document.getElementById('qr-modal');
