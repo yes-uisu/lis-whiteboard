@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Li's 协作白板 & 文档</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/marked-highlight@2.0.1/lib/index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Li's 协作白板 & 文档</h1>
+            <div class="room-info">
+                <span id="room-id"></span>
+                <span id="user-count">👥 1</span>
+            </div>
+        </div>
+        
+        <!-- 模式切换 -->
+        <div class="mode-switcher">
+            <button id="canvas-mode-btn" class="mode-btn active">🎨 画板模式</button>
+            <button id="markdown-mode-btn" class="mode-btn">📝 文档模式</button>
+        </div>
+        
+        <!-- 画板工具栏 -->
+        <div class="toolbar" id="canvas-toolbar">
+            <div class="tool-group">
+                <button id="pen-tool" class="tool-btn active" title="画笔">✏️</button>
+                <button id="eraser-tool" class="tool-btn" title="橡皮擦">🧹</button>
+                <button id="line-tool" class="tool-btn" title="直线">📏</button>
+                <button id="rect-tool" class="tool-btn" title="矩形">▭</button>
+                <button id="circle-tool" class="tool-btn" title="圆形">○</button>
+            </div>
+            
+            <div class="tool-group">
+                <label>颜色：</label>
+                <input type="color" id="color-picker" value="#000000">
+                
+                <label>粗细：</label>
+                <input type="range" id="brush-size" min="1" max="50" value="3">
+                <span id="size-display">3</span>
+            </div>
+            
+            <div class="tool-group">
+                <button id="clear-canvas-btn" class="action-btn">🗑️ 清空画板</button>
+                <button id="save-canvas-btn" class="action-btn">💾 保存画板</button>
+            </div>
+        </div>
+        
+        <!-- Markdown工具栏 -->
+        <div class="toolbar" id="markdown-toolbar" style="display: none;">
+            <div class="tool-group">
+                <button class="md-btn" data-action="bold" title="粗体">𝐁</button>
+                <button class="md-btn" data-action="italic" title="斜体"><i>I</i></button>
+                <button class="md-btn" data-action="heading" title="标题">H1</button>
+                <button class="md-btn" data-action="quote" title="引用">❝❞</button>
+                <button class="md-btn" data-action="code" title="代码">&lt;/&gt;</button>
+                <button class="md-btn" data-action="link" title="链接">🔗</button>
+                <button class="md-btn" data-action="list" title="列表">• •</button>
+                <button class="md-btn" data-action="table" title="表格">⊞</button>
+            </div>
+            
+            <div class="tool-group">
+                <button id="clear-markdown-btn" class="action-btn">🗑️ 清空文档</button>
+                <button id="save-markdown-btn" class="action-btn">💾 保存文档</button>
+            </div>
+        </div>
+        
+        <!-- 通用工具栏 -->
+        <div class="toolbar common-toolbar">
+            <button id="qr-btn" class="action-btn">📱 分享</button>
+        </div>
+        
+        <!-- 画板区域 -->
+        <canvas id="whiteboard"></canvas>
+        
+        <!-- Markdown编辑区域 -->
+        <div id="markdown-container" style="display: none;">
+            <div class="markdown-editor">
+                <div class="editor-pane">
+                    <h3>📝 编辑区</h3>
+                    <textarea id="markdown-editor" placeholder="在此输入 Markdown 内容...&#x0a;&#x0a;# 标题&#x0a;## 二级标题&#x0a;&#x0a;**粗体** *斜体*&#x0a;&#x0a;- 列表项 1&#x0a;- 列表项 2&#x0a;&#x0a;```javascript&#x0a;console.log('代码块');&#x0a;```"></textarea>
+                </div>
+                <div class="preview-pane">
+                    <h3>👁️ 预览</h3>
+                    <div id="markdown-preview" class="markdown-body"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 二维码弹窗 -->
+        <div id="qr-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>扫码加入协作</h2>
+                <div id="qr-code"></div>
+                <p id="share-url"></p>
+                <button id="copy-url-btn" class="action-btn">📋 复制链接</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

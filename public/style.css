@@ -1,0 +1,464 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    max-width: 1400px;
+    width: 100%;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.room-info {
+    display: flex;
+    gap: 20px;
+    font-size: 16px;
+}
+
+.toolbar {
+    background: #f8f9fa;
+    padding: 15px 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tool-btn {
+    width: 45px;
+    height: 45px;
+    border: 2px solid #dee2e6;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.tool-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.tool-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+#color-picker {
+    width: 50px;
+    height: 40px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#brush-size {
+    width: 120px;
+}
+
+#size-display {
+    font-weight: bold;
+    color: #667eea;
+    min-width: 30px;
+}
+
+.action-btn {
+    padding: 10px 20px;
+    border: none;
+    background: #667eea;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+#whiteboard {
+    display: block;
+    background: white;
+    cursor: crosshair;
+    margin: 0 auto;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: #000;
+}
+
+#qr-code {
+    margin: 20px 0;
+}
+
+#qr-code img {
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+}
+
+#share-url {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    word-break: break-all;
+    font-family: monospace;
+    color: #495057;
+}
+
+label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* 模式切换按钮 */
+.mode-switcher {
+    display: flex;
+    gap: 0;
+    padding: 0 30px;
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 15px 30px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.mode-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.mode-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: white;
+}
+
+/* 通用工具栏 */
+.common-toolbar {
+    border-top: 2px solid #e9ecef;
+    justify-content: flex-end;
+}
+
+/* Markdown容器 */
+#markdown-container {
+    flex: 1;
+    background: white;
+    overflow: hidden;
+}
+
+.markdown-editor {
+    display: flex;
+    height: calc(100vh - 280px);
+    gap: 0;
+}
+
+.editor-pane,
+.preview-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.editor-pane {
+    border-right: 2px solid #e9ecef;
+}
+
+.editor-pane h3,
+.preview-pane h3 {
+    padding: 15px 20px;
+    margin: 0;
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 16px;
+    color: #495057;
+}
+
+#markdown-editor {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+}
+
+#markdown-preview {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Markdown样式 */
+.markdown-body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #1a1a1a;
+}
+
+.markdown-body h1 {
+    font-size: 2em;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 8px;
+}
+
+.markdown-body h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 6px;
+}
+
+.markdown-body h3 {
+    font-size: 1.25em;
+}
+
+.markdown-body code {
+    background: #f6f8fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+}
+
+.markdown-body pre {
+    background: #f6f8fa;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 16px 0;
+}
+
+.markdown-body pre code {
+    background: none;
+    padding: 0;
+}
+
+.markdown-body blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 16px;
+    margin: 16px 0;
+    color: #6c757d;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    padding-left: 24px;
+    margin: 16px 0;
+}
+
+.markdown-body li {
+    margin: 8px 0;
+}
+
+.markdown-body table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.markdown-body table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.markdown-body a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+.markdown-body img {
+    max-width: 100%;
+    height: auto;
+}
+
+.markdown-body hr {
+    border: none;
+    border-top: 2px solid #e9ecef;
+    margin: 24px 0;
+}
+
+/* Markdown工具按钮 */
+.md-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #dee2e6;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.md-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.md-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .toolbar {
+        justify-content: center;
+    }
+    
+    .tool-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .markdown-editor {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .editor-pane {
+        border-right: none;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    #markdown-editor,
+    #markdown-preview {
+        height: 300px;
+    }
+    
+    .mode-switcher {
+        padding: 0 15px;
+    }
+    
+    .mode-btn {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+}
