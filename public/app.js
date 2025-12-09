@@ -410,7 +410,69 @@ if (saveMarkdownBtn) {
     });
 }
 
-// ==================== 画布保存 ====================
+// ==================== 画布保存和加载 ====================
+// 加载画板功能
+const loadCanvasBtn = document.getElementById('load-canvas-btn');
+const canvasFileInput = document.getElementById('canvas-file-input');
+
+if (loadCanvasBtn && canvasFileInput) {
+    loadCanvasBtn.addEventListener('click', () => {
+        canvasFileInput.click();
+    });
+    
+    canvasFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // 检查文件类型
+        if (!file.type.match(/^image\//)) {
+            alert('请选择图片文件');
+            return;
+        }
+        
+        // 检查文件大小（限制10MB）
+        if (file.size > 10 * 1024 * 1024) {
+            alert('图片太大，请选择小于 10MB 的图片');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 计算缩放比例以适应画布
+                const scale = Math.min(
+                    canvas.width / img.width,
+                    canvas.height / img.height
+                );
+                
+                // 计算居中位置
+                const x = (canvas.width - img.width * scale) / 2;
+                const y = (canvas.height - img.height * scale) / 2;
+                
+                // 绘制图片
+                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                
+                alert('图片加载成功！\n提示：加载的图片仅在本地显示，不会同步给其他用户。');
+            };
+            img.onerror = () => {
+                alert('图片加载失败，请确保文件格式正确');
+            };
+            img.src = event.target.result;
+        };
+        reader.onerror = () => {
+            alert('文件读取失败，请重试');
+        };
+        reader.readAsDataURL(file);
+        
+        // 清空input，允许重复加载同一文件
+        e.target.value = '';
+    });
+}
+
 // 保存画布为 PNG 图片
 const saveCanvasBtn = document.getElementById('save-canvas-btn');
 if (saveCanvasBtn) {
