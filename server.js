@@ -103,11 +103,13 @@ io.on('connection', (socket) => {
     
     // 发送当前Markdown数据和所有权信息给新用户
     const isCreator = roomCreators.get(roomId) === socket.id;
+    const creatorId = roomCreators.get(roomId);
     socket.emit('markdown-data', {
       content: markdownData.get(roomId),
       ownership: markdownOwnership.get(roomId),
       isCreator: isCreator,
-      userId: socket.id
+      userId: socket.id,
+      creatorId: creatorId
     });
     
     // 广播当前在线人数给房间内所有用户
@@ -192,7 +194,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   const localIP = getLocalIP();
   console.log(`服务器运行在:`);
