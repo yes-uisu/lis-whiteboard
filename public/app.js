@@ -54,12 +54,8 @@ let startX, startY;
 // 用户信息
 let isRoomCreator = false;
 let currentUserId = null;
-<<<<<<< HEAD
 let markdownOwnership = []; // 存储文档所有权信息 [{start, end, owner}]
 let roomCreatorId = null; // 房间创建者ID
-=======
-let markdownOwnership = []; // 存储文档所有权信息
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
 
 // 工具按钮
 const tools = {
@@ -248,12 +244,9 @@ socket.on('markdown-data', (data) => {
     markdownOwnership = data.ownership || [];
     isRoomCreator = data.isCreator;
     currentUserId = data.userId;
-<<<<<<< HEAD
     roomCreatorId = data.creatorId || null;
     lastMarkdownContent = data.content;
     console.log('初始化用户信息:', { isRoomCreator, currentUserId, roomCreatorId, ownership: markdownOwnership });
-=======
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
     updatePreview();
     updateEditorReadonly();
     isUpdatingMarkdown = false;
@@ -263,11 +256,8 @@ socket.on('markdown-update', (data) => {
     isUpdatingMarkdown = true;
     markdownEditor.value = data.content;
     markdownOwnership = data.ownership || [];
-<<<<<<< HEAD
     lastMarkdownContent = data.content;
     console.log('收到更新，所有权信息:', markdownOwnership);
-=======
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
     updatePreview();
     updateEditorReadonly();
     isUpdatingMarkdown = false;
@@ -338,18 +328,13 @@ markdownEditor.addEventListener('input', (e) => {
     }
 });
 
-<<<<<<< HEAD
 // 监听所有输入操作（包括删除、修改）
-=======
-// 监听删除和退格操作
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
 markdownEditor.addEventListener('beforeinput', (e) => {
     // 房间创建者可以编辑所有内容
     if (isRoomCreator) {
         return;
     }
     
-<<<<<<< HEAD
     const start = markdownEditor.selectionStart;
     const end = markdownEditor.selectionEnd;
     
@@ -414,29 +399,11 @@ markdownEditor.addEventListener('beforeinput', (e) => {
         if (!canDelete) {
             e.preventDefault();
             alert('您只能删除或修改自己输入的内容！');
-=======
-    // 检查是否是删除操作
-    if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward' || 
-        e.inputType === 'deleteByCut' || e.inputType === 'deleteByDrag' ||
-        e.inputType === 'deleteContent' || e.inputType === 'deleteWordBackward' || 
-        e.inputType === 'deleteWordForward') {
-        
-        const start = markdownEditor.selectionStart;
-        const end = markdownEditor.selectionEnd;
-        
-        // 检查删除范围内是否包含其他人的内容
-        const canDelete = checkDeletePermission(start, end);
-        
-        if (!canDelete) {
-            e.preventDefault();
-            alert('您只能删除自己输入的内容！');
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
             return;
         }
     }
 });
 
-<<<<<<< HEAD
 // 检查删除权限（核心权限控制）
 function checkDeletePermission(start, end) {
     // 如果是房间创建者，允许所有操作
@@ -484,57 +451,11 @@ function updateOwnership(newContent) {
     // 找出变化的位置（从前向后）
     let changeStart = 0;
     while (changeStart < Math.min(oldLen, newLen) && 
-=======
-// 检查删除权限
-function checkDeletePermission(start, end) {
-    // 如果是房间创建者，允许所有操作
-    if (isRoomCreator) {
-        return true;
-    }
-    
-    // 检查选中范围是否包含其他人的内容
-    for (const block of markdownOwnership) {
-        // 如果内容块属于房间创建者或当前用户，可以删除
-        if (block.owner === currentUserId || block.owner === getRoomCreatorId()) {
-            continue;
-        }
-        
-        // 检查是否有重叠
-        if (!(end <= block.start || start >= block.end)) {
-            return false; // 有其他用户的内容，不允许删除
-        }
-    }
-    
-    return true;
-}
-
-// 获取房间创建者ID
-function getRoomCreatorId() {
-    // 查找所有权列表中的创建者ID（第一次加入的用户）
-    if (markdownOwnership.length > 0) {
-        return markdownOwnership[0].owner;
-    }
-    return null;
-}
-
-// 更新所有权信息
-function updateOwnership(newContent) {
-    const oldContent = getOldContent();
-    const oldLen = oldContent.length;
-    const newLen = newContent.length;
-    
-    // 找出变化的位置
-    let changeStart = 0;
-    while (changeStart < oldLen && changeStart < newLen && 
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
            oldContent[changeStart] === newContent[changeStart]) {
         changeStart++;
     }
     
-<<<<<<< HEAD
     // 找出变化的位置（从后向前）
-=======
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
     let oldEnd = oldLen;
     let newEnd = newLen;
     while (oldEnd > changeStart && newEnd > changeStart && 
@@ -543,17 +464,13 @@ function updateOwnership(newContent) {
         newEnd--;
     }
     
-<<<<<<< HEAD
     console.log('内容变化:', { changeStart, oldEnd, newEnd, oldLen, newLen });
     
-=======
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
     // 计算变化量
     const deletedLength = oldEnd - changeStart;
     const insertedLength = newEnd - changeStart;
     const delta = insertedLength - deletedLength;
     
-<<<<<<< HEAD
     console.log('变化量:', { deletedLength, insertedLength, delta });
     
     // 第一步：移除被删除区域内的所有权块
@@ -778,10 +695,6 @@ function insertMarkdown(action) {
     updateOwnership(content);
     updatePreview();
     socket.emit('markdown-update', { roomId, content, ownership: markdownOwnership });
-<<<<<<< HEAD
-=======
-}
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
 }
 
 // ==================== 文档保存和加载 ====================

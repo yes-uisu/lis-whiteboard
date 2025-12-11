@@ -103,20 +103,13 @@ io.on('connection', (socket) => {
     
     // 发送当前Markdown数据和所有权信息给新用户
     const isCreator = roomCreators.get(roomId) === socket.id;
-<<<<<<< HEAD
     const creatorId = roomCreators.get(roomId);
-=======
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
     socket.emit('markdown-data', {
       content: markdownData.get(roomId),
       ownership: markdownOwnership.get(roomId),
       isCreator: isCreator,
-<<<<<<< HEAD
       userId: socket.id,
       creatorId: creatorId
-=======
-      userId: socket.id
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
     });
     
     // 广播当前在线人数给房间内所有用户
