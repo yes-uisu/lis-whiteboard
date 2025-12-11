@@ -23,11 +23,23 @@ let currentMode = 'canvas'; // 'canvas' 或 'markdown'
 const canvas = document.getElementById('whiteboard');
 const ctx = canvas.getContext('2d');
 
-// 设置canvas大小
+// 设置canvas大小（保留画布内容）
 function resizeCanvas() {
     const container = canvas.parentElement;
+    
+    // 保存当前画布内容
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const oldWidth = canvas.width;
+    const oldHeight = canvas.height;
+    
+    // 调整画布大小
     canvas.width = container.clientWidth - 60;
     canvas.height = window.innerHeight - 250;
+    
+    // 恢复画布内容
+    if (oldWidth > 0 && oldHeight > 0) {
+        ctx.putImageData(imageData, 0, 0);
+    }
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -276,7 +288,7 @@ canvasModeBtn.addEventListener('click', () => {
     markdownToolbar.style.display = 'none';
     canvas.style.display = 'block';
     markdownContainer.style.display = 'none';
-    resizeCanvas();
+    // 不要调用resizeCanvas，避免清空画布
 });
 
 markdownModeBtn.addEventListener('click', () => {
@@ -578,53 +590,19 @@ function updateOwnership(newContent) {
             return block;
         } else if (block.start >= oldEnd) {
             // 完全在变化后的块，调整位置
-=======
-    // 如果有插入内容
-    if (insertedLength > 0) {
-        // 添加新的所有权块
-        markdownOwnership.push({
-            start: changeStart,
-            end: newEnd,
-            owner: currentUserId
-        });
-        
-        // 合并相邻的同属主块
-        markdownOwnership = mergeOwnership(markdownOwnership);
-    }
-    
-    // 更新后续块的位置
-    markdownOwnership = markdownOwnership.map(block => {
-        if (block.end <= changeStart) {
-            // 变化前的块，不变
-            return block;
-        } else if (block.start >= oldEnd) {
-            // 变化后的块，调整位置
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
             return {
                 ...block,
                 start: block.start + delta,
                 end: block.end + delta
             };
         } else {
-<<<<<<< HEAD
             // 跨越变化区域的块
             if (block.start < changeStart && block.end > oldEnd) {
                 // 块包含整个变化区域
-=======
-            // 重叠的块，需要调整
-            if (block.start < changeStart && block.end > oldEnd) {
-                // 块包含变化区域
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
                 return {
                     ...block,
                     end: block.end + delta
                 };
-<<<<<<< HEAD
-=======
-            } else if (block.start >= changeStart && block.end <= oldEnd) {
-                // 块完全在变化区域内，被删除
-                return null;
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
             } else if (block.start < changeStart) {
                 // 块开始在变化前，结束在变化区域内
                 return {
@@ -640,7 +618,6 @@ function updateOwnership(newContent) {
                 };
             }
         }
-<<<<<<< HEAD
     }).filter(block => block.start < block.end);
     
     // 第三步：如果有新插入的内容，添加新的所有权块
@@ -661,15 +638,6 @@ function updateOwnership(newContent) {
     
     // 更新最后的内容
     lastMarkdownContent = newContent;
-=======
-    }).filter(block => block !== null && block.start < block.end);
-}
-
-// 获取当前编辑器内容
-function getOldContent() {
-    // 通过所有权重建内容（简化版：直接使用当前值）
-    return markdownEditor.value;
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
 }
 
 // 合并相邻的同属主所有权块
@@ -817,12 +785,17 @@ function insertMarkdown(action) {
 }
 
 // ==================== 文档保存和加载 ====================
-// 加载文档功能
+// 加载文档功能（仅房间创建者可用）
 const loadMarkdownBtn = document.getElementById('load-markdown-btn');
 const markdownFileInput = document.getElementById('markdown-file-input');
 
 if (loadMarkdownBtn && markdownFileInput) {
     loadMarkdownBtn.addEventListener('click', () => {
+        // 检查是否是房间创建者
+        if (!isRoomCreator) {
+            alert('只有房间创建者才能加载文档！');
+            return;
+        }
         markdownFileInput.click();
     });
     
@@ -846,17 +819,14 @@ if (loadMarkdownBtn && markdownFileInput) {
         reader.onload = (event) => {
             const content = event.target.result;
             markdownEditor.value = content;
-<<<<<<< HEAD
-            lastMarkdownContent = content; // 更新最后内容
-=======
->>>>>>> 3e4dcf966ef6456cbe46f2cc785d50eb65f93ff4
+            lastMarkdownContent = content;
             
             // 加载文档后，将所有内容标记为房间创建者所有
             // 通过服务器处理以确保正确的所有权
             socket.emit('markdown-loaded', { roomId, content });
             
             updatePreview();
-            alert('文档加载成功！所有内容已标记为创建者输入。');
+            alert('文档加载成功！所有内容已标记为创建者所有。');
         };
         reader.onerror = () => {
             alert('文件读取失败，请重试');
@@ -868,7 +838,7 @@ if (loadMarkdownBtn && markdownFileInput) {
     });
 }
 
-// 保存文档为 Markdown 文件
+// 保存文档为 Markdown 文件（所有人都可用）
 const saveMarkdownBtn = document.getElementById('save-markdown-btn');
 if (saveMarkdownBtn) {
     saveMarkdownBtn.addEventListener('click', () => {
@@ -877,13 +847,23 @@ if (saveMarkdownBtn) {
             alert('文档内容为空，无需保存');
             return;
         }
+        
+        // 创建Blob对象，只保存内容，不保存所有权信息
         const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
         const link = document.createElement('a');
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
         link.download = `Li-Whiteboard-Doc-${timestamp}.md`;
         link.href = URL.createObjectURL(blob);
+        
+        // 触发下载
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+        
+        // 释放URL对象
         URL.revokeObjectURL(link.href);
+        
+        console.log('文档已保存:', link.download);
     });
 }
 
